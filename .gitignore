@@ -1,0 +1,6 @@
+*.suo
+*.doc
+bin
+obj
+_ReSharper.DraughtBoardPuzzle
+packages

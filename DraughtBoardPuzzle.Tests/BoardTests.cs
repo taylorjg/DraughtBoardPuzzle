@@ -11,15 +11,13 @@ namespace DraughtBoardPuzzle.Tests
         private const int TestBoardSize = 4;
 
         [Test]
-        public void Constructor_WithNoParameters_CreatesBoardOfTheCorrectSize()
+        public void Constructor_GivenASpecificBoardSize_CreatesABoardWithTheCorrectSize()
         {
             // Arrange, Act
             var board = new Board(TestBoardSize);
 
             // Assert
             Assert.That(board.BoardSize, Is.EqualTo(TestBoardSize));
-            //Assert.That(board.Width, Is.EqualTo(Board.BoardSize));
-            //Assert.That(board.Height, Is.EqualTo(Board.BoardSize));
         }
 
         [Test]

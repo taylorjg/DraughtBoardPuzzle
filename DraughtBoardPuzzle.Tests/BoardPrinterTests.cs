@@ -9,6 +9,8 @@ namespace DraughtBoardPuzzle.Tests
     [TestFixture]
     internal class BoardPrinterTests
     {
+        private const int TestBoardSize = 4;
+
         private Board _board;
         private MockPrintTarget _mockPrintTarget;
         private BoardPrinter _boardPrinter;
@@ -17,7 +19,7 @@ namespace DraughtBoardPuzzle.Tests
         [SetUp]
         public void SetUp()
         {
-            _board = new Board(4);
+            _board = new Board(TestBoardSize);
             _mockPrintTarget = new MockPrintTarget();
             _boardPrinter = new BoardPrinter(_mockPrintTarget);
             _expectedNumberOfOutputLines = _board.BoardSize * 2 + 1;

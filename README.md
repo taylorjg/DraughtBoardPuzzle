@@ -38,7 +38,7 @@ I recently came back to this project and did some research. I came across Donald
 
 * [Dancing Links](http://arxiv.org/pdf/cs/0011047v1.pdf)
 
-This algorithm can be used to solve various puzzles like [Sudoku](http://en.wikipedia.org/wiki/Sudoku) and [Polyomino](http://en.wikipedia.org/wiki/Polyomino) puzzles. The problem to be solved is represented by a matrix of 0s and 1s. The algorithm finds all solutions where each solutions consists of a set of rows in the original matrix such that each column contains a single 1.
+This algorithm can be used to solve various puzzles like [Sudoku](http://en.wikipedia.org/wiki/Sudoku) and [Polyomino](http://en.wikipedia.org/wiki/Polyomino) puzzles. The problem to be solved is represented by a matrix of 0s and 1s. The algorithm finds all solutions where each solution consists of a set of rows in the original matrix such that each column contains a single 1.
 
 Based on this paper and various other articles, I wrote my own implementation of the algorithm to try to find all solutions to the original problem. These can be seen below. In my case, I have 78 columns in the matrix. The first 14 columns correspond to the 14 pieces of the puzzle. The next 64 columns correspond to the squares on the draughtboard. Each row represents the placement of a single piece on the board. There are rows for each legal position of the piece on the board and for each orientation of the piece. Each solution identifies 14 rows in the matrix that describe the placement of the 14 pieces such that the puzzle is solved. The program finds 37 solutions in 16 seconds or so.
 

@@ -46,6 +46,7 @@ Based on this paper and various other articles, I wrote my own implementation of
 
 * [Dancing Links](http://arxiv.org/pdf/cs/0011047v1.pdf)
 * [Solving Polyomino and Polycube Puzzles](http://www.mattbusche.org/blog/article/polycube/)
+* [Generic Distributed Exact Cover Solver](http://janmagnet.files.wordpress.com/2008/07/decs-draft.pdf)
 * [Solve the Pentomino puzzle with C++ and dancing links](http://www.codeproject.com/Articles/271634/Puzzle-Solver)
 
 ### Solutions

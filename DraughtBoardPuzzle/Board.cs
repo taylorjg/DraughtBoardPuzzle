@@ -21,6 +21,11 @@ namespace DraughtBoardPuzzle
         public int BoardSize { get; private set; }
         public Colour? ColourOfSquareZeroZero { get; private set; }
 
+        public void ForceColourOfSquareZeroZeroToBeBlack()
+        {
+            ColourOfSquareZeroZero = Colour.Black;
+        }
+
         public bool PlacePieceAt(RotatedPiece rotatedPiece, int x, int y)
         {
             if (x < 0 || x >= BoardSize) throw new ArgumentOutOfRangeException("x");

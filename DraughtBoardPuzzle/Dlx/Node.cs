@@ -2,20 +2,24 @@ namespace DraughtBoardPuzzle.Dlx
 {
     public class Node
     {
-        public Node(Column columnHeader, int rowIndex)
+        public Node(ColumnHeader columnHeader, int rowIndex)
         {
             Left = Right = Up = Down = this;
-            Column = columnHeader;
+            ColumnHeader = columnHeader;
             RowIndex = rowIndex;
             if (columnHeader != null)
                 columnHeader.AppendNode(this);
+        }
+
+        protected Node() : this(null, -1)
+        {
         }
 
         public Node Left { get; private set; }
         public Node Right { get; private set; }
         public Node Up { get; private set; }
         public Node Down { get; private set; }
-        public Column Column { get; private set; }
+        public ColumnHeader ColumnHeader { get; private set; }
         public int RowIndex { get; private set; }
 
         public void AppendRowNode(Node node)

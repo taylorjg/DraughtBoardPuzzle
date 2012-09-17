@@ -17,18 +17,18 @@ namespace DraughtBoardPuzzle.Dlx
             return _solutions;
         }
 
-        internal Column Root { get; private set; }
+        internal ColumnHeader Root { get; private set; }
 
         private void BuildInternalStructure(bool[,] matrix)
         {
             var numRows = matrix.GetLength(0);
             var numCols = matrix.GetLength(1);
 
-            Root = new Column();
+            Root = new ColumnHeader();
 
             for (var col = 0; col < numCols; col++)
             {
-                var columnHeader = new Column();
+                var columnHeader = new ColumnHeader();
                 Root.AppendColumnHeader(columnHeader);
             }
 
@@ -50,17 +50,17 @@ namespace DraughtBoardPuzzle.Dlx
             }
         }
 
-        private Column FindColumnHeader(int zeroBasedColumnIndex)
+        private ColumnHeader FindColumnHeader(int zeroBasedColumnIndex)
         {
             var result = Root;
             for (var col = 0; col <= zeroBasedColumnIndex; col++)
-                result = result.Next;
+                result = result.NextColumnHeader;
             return result;
         }
 
         private void Search()
         {
-            if (Root.Next == Root)
+            if (Root.NextColumnHeader == Root)
             {
                 var reorderedSolution = (from x in _solution orderby x ascending select x).ToList();
                 _solutions.Add(reorderedSolution);
@@ -70,17 +70,17 @@ namespace DraughtBoardPuzzle.Dlx
             var c = ChooseColumnWithLeastRows();
             CoverColumn(c);
 
-            for (var r = c.Node.Down; r != c.Node; r = r.Down)
+            for (var r = c.Down; r != c; r = r.Down)
             {
                 _solution.Push(r.RowIndex);
 
                 for (var j = r.Right; j != r; j = j.Right)
-                    CoverColumn(j.Column);
+                    CoverColumn(j.ColumnHeader);
 
                 Search();
 
                 for (var j = r.Left; j != r; j = j.Left)
-                    UncoverColumn(j.Column);
+                    UncoverColumn(j.ColumnHeader);
 
                 _solution.Pop();
             }
@@ -88,12 +88,12 @@ namespace DraughtBoardPuzzle.Dlx
             UncoverColumn(c);
         }
 
-        private Column ChooseColumnWithLeastRows()
+        private ColumnHeader ChooseColumnWithLeastRows()
         {
-            Column chosenColumn = null;
+            ColumnHeader chosenColumn = null;
 
             var smallestNumberOfRows = int.MaxValue;
-            for (var columnHeader = Root.Next; columnHeader != Root; columnHeader = columnHeader.Next)
+            for (var columnHeader = Root.NextColumnHeader; columnHeader != Root; columnHeader = columnHeader.NextColumnHeader)
             {
                 if (columnHeader.Size < smallestNumberOfRows)
                 {
@@ -105,20 +105,20 @@ namespace DraughtBoardPuzzle.Dlx
             return chosenColumn;
         }
 
-        private static void CoverColumn(Column c)
+        private static void CoverColumn(ColumnHeader c)
         {
             c.UnlinkColumnHeader();
 
-            for (var i = c.Node.Down; i != c.Node; i = i.Down)
+            for (var i = c.Down; i != c; i = i.Down)
                 for (var j = i.Right; j != i; j = j.Right)
-                    j.Column.UnlinkNode(j);
+                    j.ColumnHeader.UnlinkNode(j);
         }
 
-        private static void UncoverColumn(Column c)
+        private static void UncoverColumn(ColumnHeader c)
         {
-            for (var i = c.Node.Up; i != c.Node; i = i.Up)
+            for (var i = c.Up; i != c; i = i.Up)
                 for (var j = i.Left; j != i; j = j.Left)
-                    j.Column.RelinkNode(j);
+                    j.ColumnHeader.RelinkNode(j);
 
             c.RelinkColumnHeader();
         }

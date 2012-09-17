@@ -46,7 +46,7 @@
     <Compile Include="BoardPrinter.cs" />
     <Compile Include="Colour.cs" />
     <Compile Include="ConsolePrintTarget.cs" />
-    <Compile Include="Dlx\Column.cs" />
+    <Compile Include="Dlx\ColumnHeader.cs" />
     <Compile Include="Dlx\DlxSolver.cs" />
     <Compile Include="Dlx\Node.cs" />
     <Compile Include="IPieceFeeder.cs" />

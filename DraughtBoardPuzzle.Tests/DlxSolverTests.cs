@@ -58,10 +58,8 @@ namespace DraughtBoardPuzzle.Tests
 
             // Assert
             var numColumns = 0;
-            for (var colHeader = dlxSolver.Root.Next; colHeader != dlxSolver.Root; colHeader = colHeader.Next)
-            {
+            for (var columnHeader = dlxSolver.Root.NextColumnHeader; columnHeader != dlxSolver.Root; columnHeader = columnHeader.NextColumnHeader)
                 numColumns++;
-            }
             Assert.That(numColumns, Is.EqualTo(4));
         }
 
@@ -76,10 +74,8 @@ namespace DraughtBoardPuzzle.Tests
 
             // Assert
             var numColumns = 0;
-            for (var colHeader = dlxSolver.Root.Previous; colHeader != dlxSolver.Root; colHeader = colHeader.Previous)
-            {
+            for (var columnHeader = dlxSolver.Root.PreviousColumnHeader; columnHeader != dlxSolver.Root; columnHeader = columnHeader.PreviousColumnHeader)
                 numColumns++;
-            }
             Assert.That(numColumns, Is.EqualTo(4));
         }
 
@@ -93,14 +89,17 @@ namespace DraughtBoardPuzzle.Tests
             var actual = dlxSolver.Solve(_matrix);
 
             // Assert
-            var colHeader1 = dlxSolver.Root.Next;
-            var colHeader2 = colHeader1.Next;
-            var colHeader3 = colHeader2.Next;
-            var colHeader4 = colHeader3.Next;
-            Assert.That(colHeader1.Size, Is.EqualTo(2));
-            Assert.That(colHeader2.Size, Is.EqualTo(2));
-            Assert.That(colHeader3.Size, Is.EqualTo(3));
-            Assert.That(colHeader4.Size, Is.EqualTo(2));
+            var columnHeader1 = dlxSolver.Root.NextColumnHeader;
+            var columnHeader2 = columnHeader1.NextColumnHeader;
+            var columnHeader3 = columnHeader2.NextColumnHeader;
+            var columnHeader4 = columnHeader3.NextColumnHeader;
+            Assert.That(columnHeader1.Size, Is.EqualTo(2));
+            Assert.That(columnHeader2.Size, Is.EqualTo(2));
+            Assert.That(columnHeader3.Size, Is.EqualTo(3));
+            Assert.That(columnHeader4.Size, Is.EqualTo(2));
+            Assert.That(columnHeader4.NextColumnHeader, Is.EqualTo(dlxSolver.Root));
+            Assert.That(columnHeader1.PreviousColumnHeader, Is.EqualTo(dlxSolver.Root));
+            Assert.That(dlxSolver.Root.PreviousColumnHeader, Is.EqualTo(columnHeader4));
         }
 
         [Test]
@@ -113,16 +112,16 @@ namespace DraughtBoardPuzzle.Tests
             var actual = dlxSolver.Solve(_matrix);
 
             // Assert
-            var firstColHeader = dlxSolver.Root.Next;
-            var firstNodeInColumn = firstColHeader.Node.Down;
+            var firstColumnHeader = dlxSolver.Root.NextColumnHeader;
+            var firstNodeInColumn = firstColumnHeader.Down;
             var secondNodeInColumn = firstNodeInColumn.Down;
-            Assert.That(firstNodeInColumn.Up, Is.EqualTo(firstColHeader.Node));
+            Assert.That(firstNodeInColumn.Up, Is.EqualTo(firstColumnHeader));
             Assert.That(secondNodeInColumn.Up, Is.EqualTo(firstNodeInColumn));
-            Assert.That(secondNodeInColumn.Down, Is.EqualTo(firstColHeader.Node));
+            Assert.That(secondNodeInColumn.Down, Is.EqualTo(firstColumnHeader));
             Assert.That(firstNodeInColumn.Left, Is.EqualTo(firstNodeInColumn));
             Assert.That(firstNodeInColumn.Right, Is.EqualTo(firstNodeInColumn));
-            Assert.That(firstNodeInColumn.Column, Is.EqualTo(firstColHeader));
-            Assert.That(secondNodeInColumn.Column, Is.EqualTo(firstColHeader));
+            Assert.That(firstNodeInColumn.ColumnHeader, Is.EqualTo(firstColumnHeader));
+            Assert.That(secondNodeInColumn.ColumnHeader, Is.EqualTo(firstColumnHeader));
         }
 
         [Test]
@@ -135,15 +134,15 @@ namespace DraughtBoardPuzzle.Tests
             var actual = dlxSolver.Solve(_matrix);
 
             // Assert
-            var secondColHeader = dlxSolver.Root.Next.Next;
-            var firstNodeInColumn = secondColHeader.Node.Down;
+            var secondColumnHeader = dlxSolver.Root.NextColumnHeader.NextColumnHeader;
+            var firstNodeInColumn = secondColumnHeader.Down;
             var secondNodeInColumn = firstNodeInColumn.Down;
-            Assert.That(firstNodeInColumn.Up, Is.EqualTo(secondColHeader.Node));
+            Assert.That(firstNodeInColumn.Up, Is.EqualTo(secondColumnHeader));
             Assert.That(secondNodeInColumn.Up, Is.EqualTo(firstNodeInColumn));
-            Assert.That(secondNodeInColumn.Down, Is.EqualTo(secondColHeader.Node));
+            Assert.That(secondNodeInColumn.Down, Is.EqualTo(secondColumnHeader));
             Assert.That(firstNodeInColumn.Left.Left, Is.EqualTo(firstNodeInColumn));
             Assert.That(firstNodeInColumn.Right.Right, Is.EqualTo(firstNodeInColumn));
-            Assert.That(firstNodeInColumn.Column, Is.EqualTo(secondColHeader));
+            Assert.That(firstNodeInColumn.ColumnHeader, Is.EqualTo(secondColumnHeader));
         }
 
         [Test]

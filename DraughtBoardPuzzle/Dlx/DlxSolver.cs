@@ -26,36 +26,43 @@ namespace DraughtBoardPuzzle.Dlx
 
             Root = new ColumnHeader();
 
-            for (var col = 0; col < numCols; col++)
+            for (var colIndex = 0; colIndex < numCols; colIndex++)
             {
                 var columnHeader = new ColumnHeader();
                 Root.AppendColumnHeader(columnHeader);
             }
 
-            Node lastNodeAddedToThisRow = null;
-
-            for (var row = 0; row < numRows; row++)
+            for (var rowIndex = 0; rowIndex < numRows; rowIndex++)
             {
-                for (var col = 0; col < numCols; col++)
-                {
-                    if (!matrix[row, col]) continue;
-                    var columnHeader = FindColumnHeader(col);
-                    var node = new Node(columnHeader, row);
-                    if (lastNodeAddedToThisRow != null)
-                        lastNodeAddedToThisRow.AppendRowNode(node);
-                    lastNodeAddedToThisRow = node;
-                }
+                // We are starting a new row so indicate that this row is currently empty.
+                Node lastNodeInThisRow = null;
 
-                lastNodeAddedToThisRow = null;
+                for (var colIndex = 0; colIndex < numCols; colIndex++)
+                {
+                    // We are only interested in the '1's ('true's) in the matrix.
+                    // We create a node for each '1'. We ignore all the '0's ('false's).
+                    if (!matrix[rowIndex, colIndex]) continue;
+
+                    // Add the node to the appropriate column header.
+                    var columnHeader = FindColumnHeader(colIndex);
+                    var node = new Node(columnHeader, rowIndex);
+
+                    // Append this node to the last node in this row (if there is one).
+                    if (lastNodeInThisRow != null)
+                        lastNodeInThisRow.AppendRowNode(node);
+
+                    // This node is now the last node in this row.
+                    lastNodeInThisRow = node;
+                }
             }
         }
 
-        private ColumnHeader FindColumnHeader(int zeroBasedColumnIndex)
+        private ColumnHeader FindColumnHeader(int colIndexToFind)
         {
-            var result = Root;
-            for (var col = 0; col <= zeroBasedColumnIndex; col++)
-                result = result.NextColumnHeader;
-            return result;
+            var columnHeader = Root;
+            for (var colIndex = 0; colIndex <= colIndexToFind; colIndex++)
+                columnHeader = columnHeader.NextColumnHeader;
+            return columnHeader;
         }
 
         private void Search()
@@ -66,6 +73,9 @@ namespace DraughtBoardPuzzle.Dlx
                 _solutions.Add(reorderedSolution);
                 return;
             }
+
+            // I have used variable names c, r and j here to make it easy to
+            // relate this code to the original "Dancing Links" paper.
 
             var c = ChooseColumnWithLeastRows();
             CoverColumn(c);
@@ -109,6 +119,9 @@ namespace DraughtBoardPuzzle.Dlx
         {
             c.UnlinkColumnHeader();
 
+            // I have used variable names c, i and j here to make it easy to
+            // relate this code to the original "Dancing Links" paper.
+
             for (var i = c.Down; i != c; i = i.Down)
                 for (var j = i.Right; j != i; j = j.Right)
                     j.ColumnHeader.UnlinkNode(j);
@@ -116,6 +129,9 @@ namespace DraughtBoardPuzzle.Dlx
 
         private static void UncoverColumn(ColumnHeader c)
         {
+            // I have used variable names c, i and j here to make it easy to
+            // relate this code to the original "Dancing Links" paper.
+
             for (var i = c.Up; i != c; i = i.Up)
                 for (var j = i.Left; j != i; j = j.Left)
                     j.ColumnHeader.RelinkNode(j);

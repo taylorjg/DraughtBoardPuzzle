@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Xml.Linq;
 using DraughtBoardPuzzle.Dlx;
 
 namespace DraughtBoardPuzzle
@@ -46,6 +50,19 @@ namespace DraughtBoardPuzzle
             return dlxSolver.Solve(_matrix);
         }
 
+        public void WriteSolution(int[] solutionRowIndexes)
+        {
+            for (var i = 0; i < solutionRowIndexes.Length; i++)
+            {
+                var solutionRowIndex = solutionRowIndexes[i];
+                var tuple = _dictionary[solutionRowIndex];
+                var rotatedPiece = tuple.Item1;
+                var x = tuple.Item2;
+                var y = tuple.Item3;
+                Console.WriteLine("Piece {0} - Orientation: {1}; Location: ({2}, {3})", rotatedPiece.Piece.Name, rotatedPiece.Orientation, x, y);
+            }
+        }
+
         public Board PopulateBoardWithSolution(int[] solutionRowIndexes)
         {
             var board = new Board(_board.BoardSize);
@@ -61,6 +78,130 @@ namespace DraughtBoardPuzzle
             }
 
             return board;
+        }
+
+        public void WritePropertyList(string fileName, IEnumerable<Piece> pieces, IEnumerable<IEnumerable<int>> solutions)
+        {
+            var doc = new XDocument();
+            var documentType = new XDocumentType("plist", "-//Apple//DTD PLIST 1.0//EN", "http://www.apple.com/DTDs/PropertyList-1.0.dtd", null);
+            doc.Add(documentType);
+            var plist = new XElement("plist", new XAttribute("version", "1.0"));
+            plist.Add(CreateDict(
+                new[] {"Pieces", "Solutions"},
+                new[] {CreatePieces(pieces), CreateSolutions(solutions)}));
+            doc.Add(plist);
+            //var stringBuilder = new StringBuilder();
+            //var stringWriter = new StringWriter(stringBuilder);
+            //doc.Save(stringWriter);
+            //var text = stringBuilder.ToString();
+            doc.Save(fileName);
+        }
+
+        private XElement CreatePieces(IEnumerable<Piece> pieces)
+        {
+            var array = CreateArray();
+            foreach (var piece in pieces)
+            {
+                array.Add(CreatePiece(piece));
+            }
+            return array;
+        }
+
+        private object CreatePiece(Piece piece)
+        {
+            var initStrings = CreateArray();
+            for (var y = piece.Height - 1; y >= 0; y--)
+            {
+                var initString = string.Empty;
+                for (var x = 0; x < piece.Width; x++)
+                {
+                    var square = piece.SquareAt(x, y);
+                    if (square != null)
+                        initString += (square.Colour == Colour.Black) ? "B" : "W";
+                    else
+                        initString += " ";
+                }
+                initStrings.Add(CreateString(initString));
+            }
+            var name = CreateString(piece.Name.ToString(CultureInfo.InvariantCulture));
+            return CreateDict(
+                new[] {"InitStrings", "Name"},
+                new[] {initStrings, name});
+        }
+
+        private XElement CreateSolutions(IEnumerable<IEnumerable<int>> solutions)
+        {
+            var array = CreateArray();
+            foreach (var solution in solutions)
+            {
+                array.Add(CreateSolution(solution));
+            }
+            return array;
+        }
+
+        private XElement CreateSolution(IEnumerable<int> solutionRowIndexes)
+        {
+            var dict = new XElement("dict");
+            foreach (var solutionRowIndex in solutionRowIndexes)
+            {
+                var tuple = _dictionary[solutionRowIndex];
+                var rotatedPiece = tuple.Item1;
+                var x = tuple.Item2;
+                var y = tuple.Item3;
+                var innerDict = CreateDict(
+                    new[] { "Orientation", "X", "Y" },
+                    new[] { CreateInteger((int)rotatedPiece.Orientation), CreateInteger(x), CreateInteger(y) });
+                AddKeyAndValue(dict, rotatedPiece.Piece.Name.ToString(CultureInfo.InvariantCulture), innerDict);
+            }
+            return dict;
+        }
+
+        private XElement CreateArray(params XElement[] elements)
+        {
+            var array = new XElement("array");
+            foreach (var e in elements)
+            {
+                array.Add(e);
+            }
+            return array;
+        }
+
+        private XElement CreateDict(IList<string> keys, IList<XElement> values)
+        {
+            var dict = new XElement("dict");
+            for (var i = 0; i < keys.Count; i++)
+            {
+                dict.Add(CreateKey(keys[i]));
+                dict.Add(values[i]);
+            }
+            return dict;
+        }
+
+        private XElement CreateString(string value)
+        {
+            return new XElement("string", value);
+        }
+
+        private XElement CreateKey(string value)
+        {
+            return new XElement("key", value);
+        }
+
+        private XElement CreateInteger(int value)
+        {
+            return new XElement("integer", value);
+        }
+
+        private void AddKeyAndValue(XElement e, string k, string v)
+        {
+            e.Add(CreateKey(k));
+            e.Add(CreateString(v));
+        }
+
+        private void AddKeyAndValue(XElement e, string k, XElement v)
+        {
+            e.Add(CreateKey(k));
+            e.Add(v);
         }
 
         private void BuildMatrixAndDictionary()

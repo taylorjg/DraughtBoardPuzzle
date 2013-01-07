@@ -22,10 +22,15 @@ namespace DraughtBoardPuzzleDlxApp
 
             foreach (var solution in solutions)
             {
-                var board = solver.PopulateBoardWithSolution(solution.ToArray());
+                var solutionAsArray = solution.ToArray();
+                var board = solver.PopulateBoardWithSolution(solutionAsArray);
                 Console.WriteLine();
                 boardPrinter.Print(board);
+                Console.WriteLine();
+                solver.WriteSolution(solutionAsArray);
             }
+
+            solver.WritePropertyList("8x8_Pieces1.plist", pieces, solutions);
         }
 
         private static List<IEnumerable<int>> RemoveDuplicateSolutions(SolverUsingDlx solver, IEnumerable<IEnumerable<int>> solutions)

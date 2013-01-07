@@ -5,3 +5,4 @@ obj
 _ReSharper.DraughtBoardPuzzle
 packages
 *.user
+*.DotSettings
